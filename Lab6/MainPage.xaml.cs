@@ -1,4 +1,4 @@
-﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using System.Timers;
@@ -8,7 +8,7 @@ namespace Lab6;
 public partial class MainPage : ContentPage
 {
     private Game game;
-    private Timer gameTimer;
+    private System.Timers.Timer gameTimer;
 
     public MainPage()
     {
@@ -19,7 +19,7 @@ public partial class MainPage : ContentPage
 
     private void SetupTimer()
     {
-        gameTimer = new Timer(1000 / 60); // 60 FPS
+        gameTimer = new System.Timers.Timer(1000 / 60); // 60 FPS
         gameTimer.Elapsed += (s, e) => Dispatcher.Dispatch(() =>
         {
             game.Update();
