@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace Lab6;
 
@@ -6,7 +6,10 @@ public class Board
 {
     private const int NUM_ROWS = 11;
     private const int NUM_COLS = 8;
+    private const float VISUAL_ROW_HEIGHT = 43.3f;
+    private const float VISUAL_BUBBLE_DIAMETER = 50f;
     private Bubble[][] rows;
+    private Random random = new Random();
 
     public Board()
     {
@@ -17,7 +20,7 @@ public class Board
             int startCol = i % 2 == 0 ? 1 : 0;
             for (int j = startCol; j < NUM_COLS; j += 2)
             {
-                rows[i][j] = new Bubble(i, j, new Random().Next(4));
+                rows[i][j] = new Bubble(i, j, random.Next(4));
             }
         }
     }
@@ -26,8 +29,8 @@ public class Board
 
     public void AddBubble(Bubble bubble, (float x, float y) coords)
     {
-        int rowNum = (int)(coords.y / 43.3f); // ROW_HEIGHT
-        int colNum = (int)(coords.x / 50f * 2); // BUBBLE_DIMS
+        int rowNum = (int)(coords.y / VISUAL_ROW_HEIGHT); // Use constant
+        int colNum = (int)(coords.x / VISUAL_BUBBLE_DIAMETER * 2); // Use constant
         if (rowNum % 2 == 1) colNum -= 1;
         colNum = (int)Math.Round(colNum / 2.0) * 2;
         if (rowNum % 2 == 0) colNum -= 1;
@@ -55,18 +58,14 @@ public class Board
         return bubbles;
     }
 
-    public (Dictionary<int, Dictionary<int, Bubble>> found, List<Bubble> list) GetGroup(Bubble bubble, Dictionary<int, Dictionary<int, Bubble>> found, bool differentColor)
+    public void GetGroup(Bubble bubble, Dictionary<int, Dictionary<int, Bubble>> found, ref List<Bubble> list, bool differentColor)
     {
         int curRow = bubble.GetRow();
         if (!found.ContainsKey(curRow))
             found[curRow] = new Dictionary<int, Bubble>();
-        if (!found.ContainsKey(-1)) // Використовуємо -1 для списку
-            found[-1] = new Dictionary<int, Bubble> { { 0, null } }; // Список зберігається як found[-1][0]
-        var list = found[-1][0] != null ? found[-1][0].GetType() != typeof(List<Bubble>) ? new List<Bubble>() : (List<Bubble>)found[-1][0] : new List<Bubble>();
-        found[-1][0] = null; // Очищаємо, щоб уникнути конфліктів типів
 
         if (found[curRow].ContainsKey(bubble.GetCol()))
-            return (found, list);
+            return;
 
         found[curRow][bubble.GetCol()] = bubble;
         list.Add(bubble);
@@ -75,15 +74,12 @@ public class Board
         var surrounding = GetBubblesAround(curRow, curCol);
         foreach (var bubbleAt in surrounding)
         {
-            if (bubbleAt.GetType() == bubble.GetType() || differentColor)
+            if (bubbleAt != null && (bubbleAt.ColorType == bubble.ColorType || differentColor))
             {
-                var result = GetGroup(bubbleAt, found, differentColor);
-                found = result.found;
-                list = result.list;
+                GetGroup(bubbleAt, found, ref list, differentColor); // Recursive call with ref list
             }
         }
-        found[-1][0] = list; // Зберігаємо оновлений список
-        return (found, list);
+
     }
 
     public void PopBubbleAt(int row, int col)
@@ -103,9 +99,9 @@ public class Board
             var bubble = GetBubbleAt(0, i);
             if (bubble != null && !connected[0][i])
             {
-                var group = GetGroup(bubble, new Dictionary<int, Dictionary<int, Bubble>>(), true);
-                foreach (var b in group.list)
-                    connected[b.GetRow()][b.GetCol()] = true;
+                var foundBubbles = new Dictionary<int, Dictionary<int, Bubble>>();
+                var groupList = new List<Bubble>();
+                connected[b.GetRow()][b.GetCol()] = true;
             }
         }
 
