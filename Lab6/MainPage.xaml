@@ -1,27 +1,35 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
              x:Class="Lab6.MainPage"
              BackgroundImageSource="flowers.jpg">
-    <VerticalStackLayout Spacing="10" Padding="20">
-        <HorizontalStackLayout HorizontalOptions="Center" Spacing="20">
-            <Label x:Name="ScoreLabel" Text="Бали: 0" FontSize="16" TextColor="White"/>
-            <Label x:Name="LevelLabel" Text="Гра: 1" FontSize="16" TextColor="White"/>
-            <Label x:Name="BubblesRemainingLabel" Text="Ударів: 70" FontSize="16" TextColor="White"/>
-            <Label x:Name="HighScoreLabel" Text="Макс: 0" FontSize="16" TextColor="White"/>
-        </HorizontalStackLayout>
-        <Button x:Name="NewGameButton" Text="Нова гра" Clicked="OnNewGameClicked" 
-                HorizontalOptions="Center" BackgroundColor="Red" TextColor="White" 
-                CornerRadius="15" Padding="10" WidthRequest="200"/>
-        <Grid x:Name="GameGrid" RowDefinitions="*,Auto" ColumnDefinitions="*" 
-              BackgroundColor="Transparent" HeightRequest="600">
-            <Border StrokeShape="RoundRectangle" StrokeThickness="2" Stroke="GreenYellow">
-                <skia:SKCanvasView x:Name="GameCanvas" PaintSurface="OnCanvasPaintSurface" 
-                                   EnableTouchEvents="True" Touch="OnCanvasTouch"/>
-            </Border>
-        </Grid>
-        <Label x:Name="GameOverLabel" Text="" FontSize="24" TextColor="White" 
-               HorizontalOptions="Center" IsVisible="False"/>
-    </VerticalStackLayout>
+    <Grid RowDefinitions="Auto, *, Auto" ColumnDefinitions="*">
+        <!-- Три рядки: інфо, гра, кнопка/лейбл кінця гри -->
+
+        <VerticalStackLayout Grid.Row="0" Spacing="10" Padding="20,20,20,0">
+            <!-- Панель інформації -->
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="20">
+                <Label x:Name="ScoreLabel" Text="Бали: 0" FontSize="16" TextColor="Black"/>
+                <Label x:Name="LevelLabel" Text="Гра: 1" FontSize="16" TextColor="Black"/>
+                <Label x:Name="BubblesRemainingLabel" Text="Ударів: 70" FontSize="16" TextColor="Black"/>
+                <Label x:Name="HighScoreLabel" Text="Макс: 0" FontSize="16" TextColor="Black"/>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+
+        <!-- Ігрове поле, що займає весь доступний простір між верхньою та нижньою панеллю -->
+        <Border Grid.Row="1" StrokeShape="RoundRectangle" StrokeThickness="2" Stroke="GreenYellow" Margin="5">
+            <skia:SKCanvasView x:Name="GameCanvas" PaintSurface="OnCanvasPaintSurface" 
+                               EnableTouchEvents="True" Touch="OnCanvasTouch"
+                               VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
+        </Border>
+
+        <VerticalStackLayout Grid.Row="2" Spacing="10" Padding="20,0,20,20" HorizontalOptions="Center">
+            <!-- Панель керування грою -->
+            <Button x:Name="NewGameButton" Text="Нова гра" Clicked="OnNewGameClicked" HorizontalOptions="Center" BackgroundColor="Red" TextColor="White" 
+                    CornerRadius="15" Padding="10" WidthRequest="200"/>
+            <Label x:Name="GameOverLabel" Text="" FontSize="24" TextColor="White" 
+                   HorizontalOptions="Center" IsVisible="False"/>
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>
